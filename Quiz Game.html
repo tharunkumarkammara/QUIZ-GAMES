@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!-- saved from url=(0031)http://127.0.0.1:5500/quiz.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .quiz-container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: #e0e0e0;
+      transition: 0.3s;
+    }
+    .options button:hover {
+      background: #d0d0d0;
+    }
+    .score, .timer {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    .result {
+      display: none;
+      font-size: 1.2rem;
+      margin-top: 1.5rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz Game</h1>
+    <div class="question" id="question">What is the capital of France?</div>
+    <div class="options" id="options"><button>Paris</button><button>London</button><button>Berlin</button><button>Madrid</button></div>
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="timer">Time Left: <span id="timer">3</span>s</div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What is the capital of France?",
+        options: ["Paris", "London", "Berlin", "Madrid"],
+        answer: "Paris"
+      },
+      {
+        question: "Which language is used for web apps?",
+        options: ["Python", "JavaScript", "C++", "Java"],
+        answer: "JavaScript"
+      },
+      {
+        question: "What does HTML stand for?",
+        options: [
+          "Hyper Text Markup Language",
+          "Home Tool Markup Language",
+          "Hyperlinks and Text Markup Language",
+          "Hyper Transfer Markup Language"
+        ],
+        answer: "Hyper Text Markup Language"
+      },
+      {
+        question: "What is the largest planet in our Solar System?",
+        options: ["Earth", "Mars", "Jupiter", "Saturn"],
+        answer: "Jupiter"
+      },
+      {
+        question: "CSS stands for?",
+        options: ["Cascading Style Sheets", "Creative Style System", "Colorful Style Sheet", "Computer Style Sheet"],
+        answer: "Cascading Style Sheets"
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let timeLeft = 15;
+    let timer;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const scoreEl = document.getElementById("score");
+    const timerEl = document.getElementById("timer");
+    const resultEl = document.getElementById("result");
+
+    function loadQuestion() {
+      clearInterval(timer);
+      timeLeft = 15;
+      timerEl.textContent = timeLeft;
+      timer = setInterval(updateTimer, 1000);
+
+      if (currentIndex < questions.length) {
+        const q = questions[currentIndex];
+        questionEl.textContent = q.question;
+        optionsEl.innerHTML = "";
+
+        q.options.forEach(option => {
+          const btn = document.createElement("button");
+          btn.textContent = option;
+          btn.onclick = () => checkAnswer(option);
+          optionsEl.appendChild(btn);
+        });
+      } else {
+        endQuiz();
+      }
+    }
+
+    function updateTimer() {
+      timeLeft--;
+      timerEl.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        currentIndex++;
+        loadQuestion();
+      }
+    }
+
+    function checkAnswer(selected) {
+      const correct = questions[currentIndex].answer;
+      if (selected === correct) {
+        score += 10;
+        scoreEl.textContent = score;
+      }
+      currentIndex++;
+      loadQuestion();
+    }
+
+    function endQuiz() {
+      questionEl.style.display = "none";
+      optionsEl.style.display = "none";
+      document.querySelector(".timer").style.display = "none";
+      resultEl.style.display = "block";
+      resultEl.textContent = `Quiz Over! Your final score is ${score} / ${questions.length * 10}`;
+    }
+
+    loadQuestion();
+  </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body></html>
